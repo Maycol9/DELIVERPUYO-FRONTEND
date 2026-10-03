@@ -1,0 +1,27 @@
+name: Flutter tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.4'
+          channel: stable
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test --coverage
+      - name: Production logging guards
+        run: flutter test test/semana13_prod_test.dart test/semana15_logging_test.dart --dart-define=AMBIENTE=prod --dart-define=API_URL=https://example.invalid
